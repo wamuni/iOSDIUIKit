@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol DataFetchable {
+public protocol DataFetchable {
     func fetchCoursesName(completion: @escaping (([String]) -> Void))
 }
 
@@ -15,7 +15,7 @@ struct Course {
     let name: String
 }
 
-class CourseViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+public class CourseViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     let dataFetchable: DataFetchable
     var courses: [Course] = []
@@ -35,7 +35,7 @@ class CourseViewController: UIViewController, UITableViewDelegate, UITableViewDa
         fatalError()
     }
     
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(tableView)
         tableView.delegate = self
@@ -43,23 +43,30 @@ class CourseViewController: UIViewController, UITableViewDelegate, UITableViewDa
         view.backgroundColor = .systemBackground
         dataFetchable.fetchCoursesName { names in
             self.courses = names.map { Course(name: $0) }
+            print(self.courses)
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
         }
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    //This function is important to show the table view
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        tableView.frame = view.bounds
+    }
+    
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.text = courses[indexPath.row].name
         return cell
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return courses.count
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
